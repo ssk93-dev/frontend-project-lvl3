@@ -12,3 +12,6 @@ test:
 
 build:
 	npx webpack
+
+start:
+	npx webpack serve --open
