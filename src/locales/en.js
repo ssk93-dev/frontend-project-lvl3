@@ -9,6 +9,7 @@ export default {
       unknown: 'something went wrong, try again later',
     },
     added: 'RSS added successfully',
+    loading: 'Loading',
     feeds: 'Feeds',
     posts: 'Posts',
     view: 'View',
