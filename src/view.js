@@ -13,28 +13,29 @@ const createCard = (headName, i18nInstance) => {
   return card;
 };
 
-const createFeedElement = (feed) => {
-  const li = document.createElement('li');
-  li.classList.add('list-group-item', 'border-0', 'boeder-end-0');
-  const feedHeader = document.createElement('h3');
-  feedHeader.classList.add('h6', 'm-0');
-  feedHeader.textContent = feed.title;
-  const feedDescription = document.createElement('p');
-  feedDescription.classList.add('m-0', 'small', 'text-black-50');
-  feedDescription.textContent = feed.description;
-  li.append(feedHeader, feedDescription);
-  return li;
-};
-
-const createPostElement = (post) => {
-  const li = document.createElement('li');
-  li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'boeder-end-0');
-  const postLink = document.createElement('a');
-  postLink.classList.add('fw-bold');
-  postLink.setAttribute('href', post.link);
-  postLink.textContent = post.title;
-  li.append(postLink);
-  return li;
+const liElementsCreator = {
+  feeds: (feed) => {
+    const li = document.createElement('li');
+    li.classList.add('list-group-item', 'border-0', 'boeder-end-0');
+    const feedHeader = document.createElement('h3');
+    feedHeader.classList.add('h6', 'm-0');
+    feedHeader.textContent = feed.title;
+    const feedDescription = document.createElement('p');
+    feedDescription.classList.add('m-0', 'small', 'text-black-50');
+    feedDescription.textContent = feed.description;
+    li.append(feedHeader, feedDescription);
+    return li;
+  },
+  posts: (post) => {
+    const li = document.createElement('li');
+    li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'boeder-end-0');
+    const postLink = document.createElement('a');
+    postLink.classList.add('fw-bold');
+    postLink.setAttribute('href', post.link);
+    postLink.textContent = post.title;
+    li.append(postLink);
+    return li;
+  },
 };
 
 const createFeedback = (text, color, i18nInstance) => {
@@ -44,42 +45,25 @@ const createFeedback = (text, color, i18nInstance) => {
   return feedback;
 };
 
-const renderFeeds = (state, i18nInstance) => {
-  if (state.feeds.length > 0) {
-    const feedsContainer = document.querySelector('.feeds');
-    feedsContainer.innerHTML = '';
-    const feeds = createCard('feeds', i18nInstance);
-    const feedList = document.createElement('ul');
-    feedList.classList.add('list-group', 'border-0', 'rounded-0');
-    state.feeds.forEach((feed) => {
-      const feedElement = createFeedElement(feed);
-      feedList.append(feedElement);
+const renderList = (state, name, i18nInstance, liCreator) => {
+  if (state[name].length > 0) {
+    const container = document.querySelector(`.${name}`);
+    container.innerHTML = '';
+    const card = createCard(`${name}`, i18nInstance);
+    const list = document.createElement('ul');
+    list.classList.add('list-group', 'border-0', 'rounded-0');
+    state[name].forEach((item) => {
+      const element = liCreator[name](item);
+      list.append(element);
     });
-    feeds.append(feedList);
-    feedsContainer.append(feeds);
-  }
-};
-
-const renderPosts = (state, i18nInstance) => {
-  if (state.posts.length > 0) {
-    const postsContainer = document.querySelector('.posts');
-    postsContainer.innerHTML = '';
-    const posts = createCard('posts', i18nInstance);
-    const postList = document.createElement('ul');
-    postList.classList.add('list-group', 'border-0', 'rounded-0');
-    state.posts
-      .forEach((post) => {
-        const postElement = createPostElement(post);
-        postList.append(postElement);
-      });
-    posts.append(postList);
-    postsContainer.append(posts);
+    card.append(list);
+    container.append(card);
   }
 };
 
 const renderContent = (state, i18nInstance) => {
-  renderFeeds(state, i18nInstance);
-  renderPosts(state, i18nInstance);
+  renderList(state, 'feeds', i18nInstance, liElementsCreator);
+  renderList(state, 'posts', i18nInstance, liElementsCreator);
 };
 
 const render = (state, i18nInstance) => {
