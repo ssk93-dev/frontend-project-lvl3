@@ -65,6 +65,7 @@ const render = (state, i18nInstance) => {
   const form = document.querySelector('.rss-form');
   const input = document.querySelector('#url-input');
   const submitButton = document.querySelector('#add-button');
+  input.focus();
   if (document.querySelector('.feedback')) {
     document.querySelector('.feedback').remove();
   }
