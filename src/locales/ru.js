@@ -1,12 +1,12 @@
 export default {
   translation: {
     errors: {
-      required: 'Не должно быть пустым',
+      required: 'Поле не должно быть пустым',
       url: 'Ссылка должна быть валидным URL',
-      exists: 'Rss уже существует',
+      exists: 'RSS уже добавлен',
       invalidRss: 'Ресурс не содержит валидный RSS',
       network: 'Ошибка сети',
-      unknown: 'Упс что-то пошло не-так, попробуйте позднее',
+      unknown: 'Что-то пошло не так...',
     },
     added: 'RSS успешно добавлен',
     loading: 'Загрузка',

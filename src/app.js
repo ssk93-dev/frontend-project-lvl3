@@ -28,7 +28,7 @@ const app = () => {
   yup.setLocale(yupLocale);
   const state = {
     lang: 'ru',
-    formState: 'flling',
+    status: '',
     feedback: '',
     feeds: [],
     posts: [],
@@ -53,22 +53,22 @@ const app = () => {
         .then((res) => {
           if (!res.message) {
             state.feedback = 'loading';
-            watchedState.formState = 'loading';
+            watchedState.status = 'loading';
             getUrlContent(url)
               .then((data) => {
                 const content = parse(data, url);
                 state.feeds.push(content.channel);
-                state.posts.push(content.items);
+                state.posts = [...state.posts, ...content.items];
                 state.feedback = 'added';
-                watchedState.formState = 'valid';
+                watchedState.status = 'valid';
               })
               .catch((error) => {
                 state.feedback = identifyError(error);
-                watchedState.formState = 'error';
+                watchedState.status = 'error';
               });
           } else {
             watchedState.feedback = res.message;
-            watchedState.formState = 'invalid';
+            watchedState.status = 'invalid';
           }
         });
     });

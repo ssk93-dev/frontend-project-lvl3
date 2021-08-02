@@ -3,10 +3,10 @@ export default {
     errors: {
       required: 'Should not be empty',
       url: 'The link must be a valid URL',
-      exists: 'Rss already exists',
+      exists: 'RSS already exists',
       invalidRss: 'Resource does not contain valid RSS',
       network: 'Network error',
-      unknown: 'something went wrong, try again later',
+      unknown: 'Something went wrong...',
     },
     added: 'RSS added successfully',
     loading: 'Loading',
