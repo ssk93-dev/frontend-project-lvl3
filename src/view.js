@@ -1,18 +1,5 @@
 import onChange from 'on-change';
 
-const createCard = (headName, i18nInstance) => {
-  const card = document.createElement('div');
-  card.classList.add('card', 'border-0');
-  const headerCard = document.createElement('div');
-  headerCard.classList.add('card-body');
-  const header = document.createElement('h2');
-  header.classList.add('card-title', 'h4');
-  header.textContent = i18nInstance.t(headName);
-  headerCard.append(header);
-  card.append(headerCard);
-  return card;
-};
-
 const liElementsCreator = {
   feeds: (feed) => {
     const li = document.createElement('li');
@@ -49,7 +36,15 @@ const renderList = (state, name, i18nInstance, liCreator) => {
   if (state[name].length > 0) {
     const container = document.querySelector(`.${name}`);
     container.innerHTML = '';
-    const card = createCard(`${name}`, i18nInstance);
+    const card = document.createElement('div');
+    card.classList.add('card', 'border-0');
+    const headerCard = document.createElement('div');
+    headerCard.classList.add('card-body');
+    const header = document.createElement('h2');
+    header.classList.add('card-title', 'h4');
+    header.textContent = i18nInstance.t(name);
+    headerCard.append(header);
+    card.append(headerCard);
     const list = document.createElement('ul');
     list.classList.add('list-group', 'border-0', 'rounded-0');
     state[name].forEach((item) => {
