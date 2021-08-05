@@ -1,34 +1,31 @@
 import onChange from 'on-change';
 
+const createElement = (elName, text, ...classes) => {
+  const el = document.createElement(elName);
+  el.textContent = text;
+  el.classList.add(...classes);
+  return el;
+};
+
 const liElementsCreator = {
   feeds: (feed) => {
-    const li = document.createElement('li');
-    li.classList.add('list-group-item', 'border-0', 'boeder-end-0');
-    const feedHeader = document.createElement('h3');
-    feedHeader.classList.add('h6', 'm-0');
-    feedHeader.textContent = feed.title;
-    const feedDescription = document.createElement('p');
-    feedDescription.classList.add('m-0', 'small', 'text-black-50');
-    feedDescription.textContent = feed.description;
+    const li = createElement('li', '', 'list-group-item', 'border-0', 'boeder-end-0');
+    const feedHeader = createElement('h3', feed.title, 'h6', 'm-0');
+    const feedDescription = createElement('p', feed.description, 'm-0', 'small', 'text-black-50');
     li.append(feedHeader, feedDescription);
     return li;
   },
   posts: (post) => {
-    const li = document.createElement('li');
-    li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'boeder-end-0');
-    const postLink = document.createElement('a');
-    postLink.classList.add('fw-bold');
+    const li = createElement('li', '', 'list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'boeder-end-0');
+    const postLink = createElement('a', post.title, 'fw-bold');
     postLink.setAttribute('href', post.link);
-    postLink.textContent = post.title;
     li.append(postLink);
     return li;
   },
 };
 
 const createFeedback = (text, color, i18nInstance) => {
-  const feedback = document.createElement('p');
-  feedback.classList.add('feedback', 'm-0', 'position-absolute', 'small', `${color}`);
-  feedback.textContent = i18nInstance.t(text);
+  const feedback = createElement('p', i18nInstance.t(text), 'feedback', 'm-0', 'position-absolute', 'small', `${color}`);
   return feedback;
 };
 
@@ -36,17 +33,12 @@ const renderList = (state, name, i18nInstance, liCreator) => {
   if (state[name].length > 0) {
     const container = document.querySelector(`.${name}`);
     container.innerHTML = '';
-    const card = document.createElement('div');
-    card.classList.add('card', 'border-0');
-    const headerCard = document.createElement('div');
-    headerCard.classList.add('card-body');
-    const header = document.createElement('h2');
-    header.classList.add('card-title', 'h4');
-    header.textContent = i18nInstance.t(name);
+    const card = createElement('div', '', 'card', 'border-0');
+    const headerCard = createElement('div', '', 'card-body');
+    const header = createElement('h2', i18nInstance.t(name), 'card-title', 'h4');
     headerCard.append(header);
     card.append(headerCard);
-    const list = document.createElement('ul');
-    list.classList.add('list-group', 'border-0', 'rounded-0');
+    const list = createElement('ul', '', 'list-group', 'border-0', 'rounded-0');
     state[name].forEach((item) => {
       const element = liCreator[name](item);
       list.append(element);
@@ -136,6 +128,10 @@ const watch = (state, i18nInstance) => onChange(state, (path) => {
       i18nInstance.changeLanguage(state.lang);
       renderTemplate(i18nInstance);
       render(state, i18nInstance);
+      break;
+    }
+    case 'posts': {
+      renderContent(state, i18nInstance);
       break;
     }
     default:

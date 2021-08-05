@@ -2,13 +2,11 @@ const itemParse = (item, source) => {
   const itemTitle = item.querySelector('title');
   const itemDescription = item.querySelector('description');
   const itemLink = item.querySelector('link');
-  const itemPubDate = item.querySelector('pubDate');
   const itemGuId = item.querySelector('guid');
   return {
     title: itemTitle.textContent,
     description: itemDescription.textContent,
     link: itemLink.textContent,
-    pubDate: new Date(itemPubDate.textContent),
     guid: itemGuId.textContent,
     source,
   };

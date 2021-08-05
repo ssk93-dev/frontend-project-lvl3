@@ -21,7 +21,23 @@ const identifyError = (error) => {
   return 'errors.unknown';
 };
 
-const getUrlContent = (url) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(`${url}`)}`).then((res) => res);
+const getUrlContent = (url) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(`${url}`)}`).then((res) => res);
+
+const findNewPosts = (state) => {
+  const existedPosts = state.posts.map((post) => post.guid);
+  const promises = state.feeds
+    .map((feed) => getUrlContent(feed.source)
+      .then((data) => {
+        const updatedPosts = parse(data, feed.source).items;
+        const newPosts = updatedPosts
+          .filter((post) => !(existedPosts.includes(post.guid)));
+        return newPosts;
+      })
+      .catch());
+  return promises;
+};
+
+const updateInterval = 5000;
 
 const app = () => {
   const i18nInstance = i18n.createInstance();
@@ -72,6 +88,19 @@ const app = () => {
           }
         });
     });
+    const update = (timeout) => {
+      if (state.feeds.length > 0) {
+        const newPosts = findNewPosts(state);
+        Promise.all(newPosts)
+          .then((result) => {
+            result.forEach((posts) => { watchedState.posts = [...watchedState.posts, ...posts]; });
+          });
+      }
+      setTimeout(() => {
+        update(timeout);
+      }, timeout);
+    };
+    update(updateInterval);
   });
 };
 
