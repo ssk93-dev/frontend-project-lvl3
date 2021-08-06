@@ -18,5 +18,7 @@ export default {
     addButton: 'Добавить',
     langButton: 'RU',
     label: 'Ссылка RSS',
+    modalRead: 'Читать полностью',
+    modalClose: 'Закрыть',
   },
 };

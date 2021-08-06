@@ -15,11 +15,17 @@ const liElementsCreator = {
     li.append(feedHeader, feedDescription);
     return li;
   },
-  posts: (post) => {
+  posts: (post, state, i18nInstance) => {
     const li = createElement('li', '', 'list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'boeder-end-0');
-    const postLink = createElement('a', post.title, 'fw-bold');
+    const linkStyle = state.viewedPosts.has(post.id) ? 'fw-normal' : 'fw-bold';
+    const postLink = createElement('a', post.title, linkStyle);
     postLink.setAttribute('href', post.link);
-    li.append(postLink);
+    const postReadBtn = createElement('button', `${i18nInstance.t('view')}`, 'btn', 'btn-outline-primary', 'btn-sm');
+    postReadBtn.setAttribute('type', 'button');
+    postReadBtn.setAttribute('data-bs-target', '#modal');
+    postReadBtn.setAttribute('data-bs-toggle', 'modal');
+    postReadBtn.setAttribute('data-id', post.id);
+    li.append(postLink, postReadBtn);
     return li;
   },
 };
@@ -40,7 +46,7 @@ const renderList = (state, name, i18nInstance, liCreator) => {
     card.append(headerCard);
     const list = createElement('ul', '', 'list-group', 'border-0', 'rounded-0');
     state[name].forEach((item) => {
-      const element = liCreator[name](item);
+      const element = liCreator[name](item, state, i18nInstance);
       list.append(element);
     });
     card.append(list);
@@ -107,11 +113,27 @@ const renderTemplate = (i18nInstance) => {
   const addButton = document.querySelector('#add-button');
   const langButton = document.querySelector('#lang-button');
   const label = document.querySelector('#label');
+  const modal = document.querySelector('#modal');
+  const modalReadBtn = modal.querySelector('.modal-footer > a');
+  const modalCloseBtn = modal.querySelector('.modal-footer > button');
+  modalReadBtn.textContent = i18nInstance.t('modalRead');
+  modalCloseBtn.textContent = i18nInstance.t('modalClose');
   header.textContent = i18nInstance.t('header');
   slogan.textContent = i18nInstance.t('slogan');
   addButton.textContent = i18nInstance.t('addButton');
   langButton.textContent = i18nInstance.t('langButton');
   label.textContent = i18nInstance.t('label');
+};
+
+const renderModal = (state) => {
+  const currentPost = state.posts.filter((post) => post.id === state.modalId)[0];
+  const modal = document.querySelector('#modal');
+  const modalHeader = modal.querySelector('.modal-title');
+  const modalBody = modal.querySelector('.modal-body');
+  const modalReadLink = modal.querySelector('.full-article');
+  modalHeader.textContent = currentPost.title;
+  modalBody.textContent = currentPost.description;
+  modalReadLink.setAttribute('href', currentPost.link);
 };
 
 const watch = (state, i18nInstance) => onChange(state, (path) => {
@@ -131,6 +153,11 @@ const watch = (state, i18nInstance) => onChange(state, (path) => {
       break;
     }
     case 'posts': {
+      renderContent(state, i18nInstance);
+      break;
+    }
+    case 'modalId': {
+      renderModal(state);
       renderContent(state, i18nInstance);
       break;
     }

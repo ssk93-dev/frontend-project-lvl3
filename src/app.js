@@ -46,6 +46,8 @@ const app = () => {
     lang: 'ru',
     status: '',
     feedback: '',
+    modalId: null,
+    viewedPosts: new Set(),
     feeds: [],
     posts: [],
   };
@@ -56,6 +58,14 @@ const app = () => {
     const watchedState = watch(state, i18nInstance);
     const form = document.querySelector('.rss-form');
     const lngBtn = document.querySelector('#lang-button');
+    const postsContainer = document.querySelector('.posts');
+    postsContainer.addEventListener('click', (e) => {
+      const modalId = e.target.dataset.id;
+      if (modalId) {
+        state.viewedPosts.add(modalId);
+        watchedState.modalId = modalId;
+      }
+    });
     lngBtn.addEventListener('click', () => {
       // eslint-disable-next-line no-unused-expressions
       state.lang === 'ru' ? watchedState.lang = 'en' : watchedState.lang = 'ru';

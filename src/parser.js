@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const itemParse = (item, source) => {
   const itemTitle = item.querySelector('title');
   const itemDescription = item.querySelector('description');
@@ -8,6 +10,7 @@ const itemParse = (item, source) => {
     description: itemDescription.textContent,
     link: itemLink.textContent,
     guid: itemGuId.textContent,
+    id: _.uniqueId(),
     source,
   };
 };

@@ -18,5 +18,7 @@ export default {
     addButton: 'Add',
     langButton: 'EN',
     label: 'RSS link',
+    modalRead: 'Read all',
+    modalClose: 'Close',
   },
 };
