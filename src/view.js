@@ -20,11 +20,17 @@ const liElementsCreator = {
     const linkStyle = state.viewedPosts.has(post.id) ? 'fw-normal' : 'fw-bold';
     const postLink = createElement('a', post.title, linkStyle);
     postLink.setAttribute('href', post.link);
+    postLink.setAttribute('target', '_blank');
+    postLink.setAttribute('rel', 'noopener noreferrer');
+    postLink.setAttribute('role', 'link');
+    postLink.setAttribute('data-id', post.id);
+    postLink.setAttribute('data-role', 'link');
     const postReadBtn = createElement('button', `${i18nInstance.t('view')}`, 'btn', 'btn-outline-primary', 'btn-sm');
     postReadBtn.setAttribute('type', 'button');
     postReadBtn.setAttribute('data-bs-target', '#modal');
     postReadBtn.setAttribute('data-bs-toggle', 'modal');
     postReadBtn.setAttribute('data-id', post.id);
+    postReadBtn.setAttribute('data-role', 'button');
     li.append(postLink, postReadBtn);
     return li;
   },
@@ -158,6 +164,9 @@ const watch = (state, i18nInstance) => onChange(state, (path) => {
     }
     case 'modalId': {
       renderModal(state);
+      break;
+    }
+    case 'viewedPosts': {
       renderContent(state, i18nInstance);
       break;
     }

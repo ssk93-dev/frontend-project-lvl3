@@ -60,10 +60,14 @@ const app = () => {
     const lngBtn = document.querySelector('#lang-button');
     const postsContainer = document.querySelector('.posts');
     postsContainer.addEventListener('click', (e) => {
-      const modalId = e.target.dataset.id;
-      if (modalId) {
-        state.viewedPosts.add(modalId);
-        watchedState.modalId = modalId;
+      const currentId = e.target.dataset.id;
+      const trgetRole = e.target.dataset.role;
+      if (trgetRole === 'link') {
+        watchedState.viewedPosts.add(currentId);
+      }
+      if (trgetRole === 'button') {
+        watchedState.viewedPosts.add(currentId);
+        watchedState.modalId = currentId;
       }
     });
     lngBtn.addEventListener('click', () => {
