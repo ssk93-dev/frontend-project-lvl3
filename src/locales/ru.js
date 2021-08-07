@@ -1,9 +1,9 @@
 export default {
   translation: {
     errors: {
-      required: 'Поле не должно быть пустым',
+      required: 'Не должно быть пустым',
       url: 'Ссылка должна быть валидным URL',
-      exists: 'RSS уже добавлен',
+      exists: 'RSS уже существует',
       invalidRss: 'Ресурс не содержит валидный RSS',
       network: 'Ошибка сети',
       unknown: 'Что-то пошло не так...',
