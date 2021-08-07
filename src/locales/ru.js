@@ -14,7 +14,7 @@ export default {
     posts: 'Посты',
     view: 'Просмотр',
     header: 'RSS агрегатор',
-    slogan: 'Начните читаль RSS сегодня! Это легко, это красиво.',
+    slogan: 'Начните читать RSS сегодня! Это легко, это красиво.',
     addButton: 'Добавить',
     langButton: 'RU',
     label: 'Ссылка RSS',
