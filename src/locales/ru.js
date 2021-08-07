@@ -8,7 +8,7 @@ export default {
       network: 'Ошибка сети',
       unknown: 'Что-то пошло не так...',
     },
-    added: 'RSS успешно добавлен',
+    added: 'RSS успешно загружен',
     loading: 'Загрузка',
     feeds: 'Фиды',
     posts: 'Посты',
