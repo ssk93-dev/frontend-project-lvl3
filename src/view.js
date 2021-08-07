@@ -75,7 +75,7 @@ const render = (state, i18nInstance) => {
   }
   switch (state.status) {
     case 'invalid': {
-      submitButton.classList.remove('disabled');
+      submitButton.removeAttribute('disabled');
       input.removeAttribute('readonly');
       const feedback = createFeedback(state.feedback, 'text-danger', i18nInstance);
       form.parentNode.appendChild(feedback);
@@ -84,7 +84,7 @@ const render = (state, i18nInstance) => {
       break;
     }
     case 'loading': {
-      submitButton.classList.add('disabled');
+      submitButton.setAttribute('disabled', null);
       input.setAttribute('readonly', null);
       const feedback = createFeedback(state.feedback, 'text-info', i18nInstance);
       form.reset();
@@ -93,7 +93,7 @@ const render = (state, i18nInstance) => {
       break;
     }
     case 'error': {
-      submitButton.classList.remove('disabled');
+      submitButton.removeAttribute('disabled');
       input.removeAttribute('readonly');
       const feedback = createFeedback(state.feedback, 'text-warning', i18nInstance);
       form.reset();
@@ -103,7 +103,7 @@ const render = (state, i18nInstance) => {
       break;
     }
     case 'valid': {
-      submitButton.classList.remove('disabled');
+      submitButton.removeAttribute('disabled');
       input.removeAttribute('readonly');
       const feedback = createFeedback(state.feedback, 'text-success', i18nInstance);
       form.reset();
