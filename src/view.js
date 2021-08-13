@@ -87,7 +87,6 @@ const render = (state, i18nInstance) => {
       submitButton.setAttribute('disabled', null);
       input.setAttribute('readonly', null);
       const feedback = createFeedback(state.feedback, 'text-info', i18nInstance);
-      form.reset();
       form.parentNode.appendChild(feedback);
       input.classList.remove('is-invalid');
       break;
@@ -96,7 +95,6 @@ const render = (state, i18nInstance) => {
       submitButton.removeAttribute('disabled');
       input.removeAttribute('readonly');
       const feedback = createFeedback(state.feedback, 'text-warning', i18nInstance);
-      form.reset();
       form.parentNode.appendChild(feedback);
       input.classList.remove('is-invalid');
       renderContent(state, i18nInstance);
@@ -120,6 +118,7 @@ const render = (state, i18nInstance) => {
 const renderTemplate = (i18nInstance) => {
   const header = document.querySelector('#header');
   const slogan = document.querySelector('#slogan');
+  const example = document.querySelector('#example');
   const addButton = document.querySelector('#add-button');
   const langButton = document.querySelector('#lang-button');
   const label = document.querySelector('#label');
@@ -130,6 +129,7 @@ const renderTemplate = (i18nInstance) => {
   modalCloseBtn.textContent = i18nInstance.t('modalClose');
   header.textContent = i18nInstance.t('header');
   slogan.textContent = i18nInstance.t('slogan');
+  example.textContent = i18nInstance.t('example');
   addButton.textContent = i18nInstance.t('addButton');
   langButton.textContent = i18nInstance.t('langButton');
   label.textContent = i18nInstance.t('label');

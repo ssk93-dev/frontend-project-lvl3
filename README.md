@@ -3,4 +3,4 @@
 [![tests and lint](https://github.com/ssk93-dev/frontend-project-lvl3/actions/workflows/testAndLint.yml/badge.svg)](https://github.com/ssk93-dev/frontend-project-lvl3/actions/workflows/testAndLint.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/62e132bbc7e5a79d7ec1/maintainability)](https://codeclimate.com/github/ssk93-dev/frontend-project-lvl3/maintainability)
 ### Vercel link:
-https://frontend-project-lvl3-ssk93-dev.vercel.app/
+http://frontend-project-lvl3-tau-beryl.vercel.app/

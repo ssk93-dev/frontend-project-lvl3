@@ -16,9 +16,10 @@ export default {
     header: 'RSS агрегатор',
     slogan: 'Начните читать RSS сегодня! Это легко, это красиво.',
     addButton: 'Добавить',
-    langButton: 'RU',
+    langButton: 'EN',
     label: 'Ссылка RSS',
     modalRead: 'Читать полностью',
     modalClose: 'Закрыть',
+    example: 'Пример: https://ru.hexlet.io/lessons.rss',
   },
 };

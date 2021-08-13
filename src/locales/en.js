@@ -16,9 +16,10 @@ export default {
     header: 'RSS reader',
     slogan: "Start reading RSS now! It's easy.",
     addButton: 'Add',
-    langButton: 'EN',
+    langButton: 'RU',
     label: 'RSS link',
     modalRead: 'Read all',
     modalClose: 'Close',
+    example: 'Example: https://ru.hexlet.io/lessons.rss',
   },
 };

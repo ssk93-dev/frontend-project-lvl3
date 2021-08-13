@@ -97,8 +97,8 @@ const app = () => {
                 watchedState.status = 'error';
               });
           } else {
-            watchedState.feedback = res.message;
             watchedState.status = 'invalid';
+            watchedState.feedback = res.message;
           }
         });
     });
