@@ -1,16 +1,11 @@
-import _ from 'lodash';
-
 const itemParse = (item, source) => {
   const itemTitle = item.querySelector('title');
   const itemDescription = item.querySelector('description');
   const itemLink = item.querySelector('link');
-  const itemGuId = item.querySelector('guid');
   return {
     title: itemTitle.textContent,
     description: itemDescription.textContent,
     link: itemLink.textContent,
-    guid: itemGuId.textContent,
-    id: _.uniqueId(),
     source,
   };
 };

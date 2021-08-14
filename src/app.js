@@ -24,13 +24,14 @@ const identifyError = (error) => {
 const getUrlContent = (url) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(`${url}`)}`).then((res) => res);
 
 const findNewPosts = (state) => {
-  const existedPosts = state.posts.map((post) => post.guid);
+  const existedPosts = state.posts.map((post) => post.link);
   const promises = state.feeds
     .map((feed) => getUrlContent(feed.source)
       .then((data) => {
         const updatedPosts = parse(data, feed.source).items;
         const newPosts = updatedPosts
-          .filter((post) => !(existedPosts.includes(post.guid)));
+          .filter((post) => !(existedPosts.includes(post.link)))
+          .map((post) => ({ ...post, id: _.uniqueId() }));
         return newPosts;
       })
       .catch());
@@ -87,8 +88,9 @@ const app = () => {
             getUrlContent(url)
               .then((data) => {
                 const content = parse(data, url);
+                const posts = content.items.map((item) => ({ ...item, id: _.uniqueId() }));
                 state.feeds.push(content.channel);
-                state.posts = [...state.posts, ...content.items];
+                state.posts = [...state.posts, ...posts];
                 state.feedback = 'added';
                 watchedState.status = 'valid';
               })
