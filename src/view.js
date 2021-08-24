@@ -106,7 +106,7 @@ const renderer = {
 };
 
 const render = (state, i18nInstance) => {
-  input.focus();
+  // input.focus();
   if (document.querySelector('.feedback')) {
     document.querySelector('.feedback').remove();
   }
