@@ -1,10 +1,6 @@
 import onChange from 'on-change';
 import _ from 'lodash';
 
-const form = document.querySelector('.rss-form');
-const input = document.querySelector('#url-input');
-const submitButton = document.querySelector('#add-button');
-
 const createElement = (elName, text, ...classes) => {
   const el = document.createElement(elName);
   el.textContent = text;
@@ -69,6 +65,10 @@ const renderContent = (state, i18nInstance) => {
   renderList(state, 'feeds', i18nInstance, liElementsCreator);
   renderList(state, 'posts', i18nInstance, liElementsCreator);
 };
+
+const form = document.querySelector('.rss-form');
+const input = document.querySelector('#url-input');
+const submitButton = document.querySelector('#add-button');
 
 const renderer = {
   invalid: (state, i18nInstance) => {
