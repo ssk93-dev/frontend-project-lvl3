@@ -21,12 +21,17 @@ const identifyError = (error) => {
   return 'errors.unknown';
 };
 
-const getUrlContent = (url) => axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(`${url}`)}`).then((res) => res);
+const proxifyUrl = (url) => {
+  const proxyfiedUrl = new URL('https://hexlet-allorigins.herokuapp.com/get');
+  proxyfiedUrl.searchParams.set('disableCache', true);
+  proxyfiedUrl.searchParams.set('url', url);
+  return proxyfiedUrl;
+};
 
 const findNewPosts = (state) => {
   const existedPosts = state.posts.map((post) => post.link);
   const promises = state.feeds
-    .map((feed) => getUrlContent(feed.source)
+    .map((feed) => axios.get(proxifyUrl(feed.source))
       .then((data) => {
         const updatedPosts = parse(data, feed.source).items;
         const newPosts = updatedPosts
@@ -35,7 +40,7 @@ const findNewPosts = (state) => {
         return newPosts;
       })
       .catch());
-  return promises;
+  return Promise.all(promises);
 };
 
 const updateInterval = 5000;
@@ -85,7 +90,7 @@ const app = () => {
           if (!res.message) {
             state.feedback = 'loading';
             watchedState.status = 'loading';
-            getUrlContent(url)
+            axios.get(proxifyUrl(url))
               .then((data) => {
                 const content = parse(data, url);
                 const posts = content.items.map((item) => ({ ...item, id: _.uniqueId() }));
@@ -106,8 +111,7 @@ const app = () => {
     });
     const update = (timeout) => {
       if (state.feeds.length > 0) {
-        const newPosts = findNewPosts(state);
-        Promise.all(newPosts)
+        findNewPosts(state)
           .then((result) => {
             result.forEach((posts) => { watchedState.posts = [...watchedState.posts, ...posts]; });
           });
