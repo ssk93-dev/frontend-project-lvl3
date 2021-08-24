@@ -67,36 +67,36 @@ const renderContent = (state, i18nInstance) => {
 };
 
 const renderer = {
-  invalid: (state, i18nInstance, elems) => {
-    elems.submitButton.removeAttribute('disabled');
-    elems.input.removeAttribute('readonly');
+  invalid: (state, i18nInstance, elements) => {
+    elements.submitButton.removeAttribute('disabled');
+    elements.input.removeAttribute('readonly');
     const feedback = createFeedback(state.feedback, 'text-danger', i18nInstance);
-    elems.form.parentNode.appendChild(feedback);
-    elems.input.classList.add('is-invalid');
+    elements.form.parentNode.appendChild(feedback);
+    elements.input.classList.add('is-invalid');
     renderContent(state, i18nInstance);
   },
-  loading: (state, i18nInstance, elems) => {
-    elems.submitButton.setAttribute('disabled', null);
-    elems.input.setAttribute('readonly', null);
+  loading: (state, i18nInstance, elements) => {
+    elements.submitButton.setAttribute('disabled', null);
+    elements.input.setAttribute('readonly', null);
     const feedback = createFeedback(state.feedback, 'text-info', i18nInstance);
-    elems.form.parentNode.appendChild(feedback);
-    elems.input.classList.remove('is-invalid');
+    elements.form.parentNode.appendChild(feedback);
+    elements.input.classList.remove('is-invalid');
   },
-  error: (state, i18nInstance, elems) => {
-    elems.submitButton.removeAttribute('disabled');
-    elems.input.removeAttribute('readonly');
+  error: (state, i18nInstance, elements) => {
+    elements.submitButton.removeAttribute('disabled');
+    elements.input.removeAttribute('readonly');
     const feedback = createFeedback(state.feedback, 'text-warning', i18nInstance);
-    elems.form.parentNode.appendChild(feedback);
-    elems.input.classList.remove('is-invalid');
+    elements.form.parentNode.appendChild(feedback);
+    elements.input.classList.remove('is-invalid');
     renderContent(state, i18nInstance);
   },
-  valid: (state, i18nInstance, elems) => {
-    elems.submitButton.removeAttribute('disabled');
-    elems.input.removeAttribute('readonly');
+  valid: (state, i18nInstance, elements) => {
+    elements.submitButton.removeAttribute('disabled');
+    elements.input.removeAttribute('readonly');
     const feedback = createFeedback(state.feedback, 'text-success', i18nInstance);
-    elems.form.reset();
-    elems.form.parentNode.appendChild(feedback);
-    elems.input.classList.remove('is-invalid');
+    elements.form.reset();
+    elements.form.parentNode.appendChild(feedback);
+    elements.input.classList.remove('is-invalid');
     renderContent(state, i18nInstance);
   },
 };
