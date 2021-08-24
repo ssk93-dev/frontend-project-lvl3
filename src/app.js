@@ -65,6 +65,35 @@ const app = () => {
     const form = document.querySelector('.rss-form');
     const lngBtn = document.querySelector('#lang-button');
     const postsContainer = document.querySelector('.posts');
+    const addNewRss = (url) => {
+      state.feedback = 'loading';
+      watchedState.status = 'loading';
+      axios.get(proxifyUrl(url))
+        .then((data) => {
+          const content = parse(data, url);
+          const posts = content.items.map((item) => ({ ...item, id: _.uniqueId() }));
+          state.feeds.push(content.channel);
+          state.posts = [...state.posts, ...posts];
+          state.feedback = 'added';
+          watchedState.status = 'valid';
+        })
+        .catch((error) => {
+          state.feedback = identifyError(error);
+          watchedState.status = 'error';
+        });
+    };
+    const update = (timeout) => {
+      if (state.feeds.length > 0) {
+        findNewPosts(state)
+          .then((result) => {
+            result.forEach((posts) => { watchedState.posts = [...watchedState.posts, ...posts]; });
+          });
+      }
+      setTimeout(() => {
+        update(timeout);
+      }, timeout);
+    };
+
     postsContainer.addEventListener('click', (e) => {
       const currentId = e.target.dataset.id;
       const trgetRole = e.target.dataset.role;
@@ -88,38 +117,13 @@ const app = () => {
       validate(url, existedUrls)
         .then((res) => {
           if (!res.message) {
-            state.feedback = 'loading';
-            watchedState.status = 'loading';
-            axios.get(proxifyUrl(url))
-              .then((data) => {
-                const content = parse(data, url);
-                const posts = content.items.map((item) => ({ ...item, id: _.uniqueId() }));
-                state.feeds.push(content.channel);
-                state.posts = [...state.posts, ...posts];
-                state.feedback = 'added';
-                watchedState.status = 'valid';
-              })
-              .catch((error) => {
-                state.feedback = identifyError(error);
-                watchedState.status = 'error';
-              });
+            addNewRss(url);
           } else {
             watchedState.status = 'invalid';
             watchedState.feedback = res.message;
           }
         });
     });
-    const update = (timeout) => {
-      if (state.feeds.length > 0) {
-        findNewPosts(state)
-          .then((result) => {
-            result.forEach((posts) => { watchedState.posts = [...watchedState.posts, ...posts]; });
-          });
-      }
-      setTimeout(() => {
-        update(timeout);
-      }, timeout);
-    };
     update(updateInterval);
   });
 };
