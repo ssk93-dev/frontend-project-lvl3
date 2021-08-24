@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import * as yup from 'yup';
 import i18n from 'i18next';
 import axios from 'axios';
@@ -28,6 +29,36 @@ const proxifyUrl = (url) => {
   return proxyfiedUrl;
 };
 
+const postHandler = (event, state) => {
+  const currentId = event.target.dataset.id;
+  const trgetRole = event.target.dataset.role;
+  if (trgetRole === 'link') {
+    state.viewedPosts.add(currentId);
+  }
+  if (trgetRole === 'button') {
+    state.viewedPosts.add(currentId);
+    state.modalId = currentId;
+  }
+};
+
+const addNewRss = (url, state) => {
+  state.feedback = 'loading';
+  state.status = 'loading';
+  axios.get(proxifyUrl(url))
+    .then((data) => {
+      const content = parse(data, url);
+      const posts = content.items.map((item) => ({ ...item, id: _.uniqueId() }));
+      state.feeds.push(content.channel);
+      state.posts = [...state.posts, ...posts];
+      state.feedback = 'added';
+      state.status = 'valid';
+    })
+    .catch((error) => {
+      state.feedback = identifyError(error);
+      state.status = 'error';
+    });
+};
+
 const findNewPosts = (state) => {
   const existedPosts = state.posts.map((post) => post.link);
   const promises = state.feeds
@@ -43,6 +74,18 @@ const findNewPosts = (state) => {
   return Promise.all(promises);
 };
 
+const update = (timeout, state) => {
+  if (state.feeds.length > 0) {
+    findNewPosts(state)
+      .then((result) => {
+        result.forEach((posts) => { state.posts = [...posts, ...state.posts]; });
+      });
+  }
+  setTimeout(() => {
+    update(timeout, state);
+  }, timeout);
+};
+
 const updateInterval = 5000;
 
 const app = () => {
@@ -50,7 +93,7 @@ const app = () => {
   yup.setLocale(yupLocale);
   const state = {
     lang: 'ru',
-    status: '',
+    status: 'valid',
     feedback: '',
     modalId: null,
     viewedPosts: new Set(),
@@ -65,45 +108,9 @@ const app = () => {
     const form = document.querySelector('.rss-form');
     const lngBtn = document.querySelector('#lang-button');
     const postsContainer = document.querySelector('.posts');
-    const addNewRss = (url) => {
-      state.feedback = 'loading';
-      watchedState.status = 'loading';
-      axios.get(proxifyUrl(url))
-        .then((data) => {
-          const content = parse(data, url);
-          const posts = content.items.map((item) => ({ ...item, id: _.uniqueId() }));
-          state.feeds.push(content.channel);
-          state.posts = [...state.posts, ...posts];
-          state.feedback = 'added';
-          watchedState.status = 'valid';
-        })
-        .catch((error) => {
-          state.feedback = identifyError(error);
-          watchedState.status = 'error';
-        });
-    };
-    const update = (timeout) => {
-      if (state.feeds.length > 0) {
-        findNewPosts(state)
-          .then((result) => {
-            result.forEach((posts) => { watchedState.posts = [...watchedState.posts, ...posts]; });
-          });
-      }
-      setTimeout(() => {
-        update(timeout);
-      }, timeout);
-    };
 
     postsContainer.addEventListener('click', (e) => {
-      const currentId = e.target.dataset.id;
-      const trgetRole = e.target.dataset.role;
-      if (trgetRole === 'link') {
-        watchedState.viewedPosts.add(currentId);
-      }
-      if (trgetRole === 'button') {
-        watchedState.viewedPosts.add(currentId);
-        watchedState.modalId = currentId;
-      }
+      postHandler(e, watchedState);
     });
     lngBtn.addEventListener('click', () => {
       // eslint-disable-next-line no-unused-expressions
@@ -117,14 +124,14 @@ const app = () => {
       validate(url, existedUrls)
         .then((res) => {
           if (!res.message) {
-            addNewRss(url);
+            addNewRss(url, watchedState);
           } else {
             watchedState.status = 'invalid';
             watchedState.feedback = res.message;
           }
         });
     });
-    update(updateInterval);
+    update(updateInterval, watchedState);
   });
 };
 
