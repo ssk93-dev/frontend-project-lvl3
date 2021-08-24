@@ -1,4 +1,9 @@
 import onChange from 'on-change';
+import _ from 'lodash';
+
+const form = document.querySelector('.rss-form');
+const input = document.querySelector('#url-input');
+const submitButton = document.querySelector('#add-button');
 
 const createElement = (elName, text, ...classes) => {
   const el = document.createElement(elName);
@@ -65,53 +70,50 @@ const renderContent = (state, i18nInstance) => {
   renderList(state, 'posts', i18nInstance, liElementsCreator);
 };
 
+const renderer = {
+  invalid: (state, i18nInstance) => {
+    submitButton.removeAttribute('disabled');
+    input.removeAttribute('readonly');
+    const feedback = createFeedback(state.feedback, 'text-danger', i18nInstance);
+    form.parentNode.appendChild(feedback);
+    input.classList.add('is-invalid');
+    renderContent(state, i18nInstance);
+  },
+  loading: (state, i18nInstance) => {
+    submitButton.setAttribute('disabled', null);
+    input.setAttribute('readonly', null);
+    const feedback = createFeedback(state.feedback, 'text-info', i18nInstance);
+    form.parentNode.appendChild(feedback);
+    input.classList.remove('is-invalid');
+  },
+  error: (state, i18nInstance) => {
+    submitButton.removeAttribute('disabled');
+    input.removeAttribute('readonly');
+    const feedback = createFeedback(state.feedback, 'text-warning', i18nInstance);
+    form.parentNode.appendChild(feedback);
+    input.classList.remove('is-invalid');
+    renderContent(state, i18nInstance);
+  },
+  valid: (state, i18nInstance) => {
+    submitButton.removeAttribute('disabled');
+    input.removeAttribute('readonly');
+    const feedback = createFeedback(state.feedback, 'text-success', i18nInstance);
+    form.reset();
+    form.parentNode.appendChild(feedback);
+    input.classList.remove('is-invalid');
+    renderContent(state, i18nInstance);
+  },
+};
+
 const render = (state, i18nInstance) => {
-  const form = document.querySelector('.rss-form');
-  const input = document.querySelector('#url-input');
-  const submitButton = document.querySelector('#add-button');
   input.focus();
   if (document.querySelector('.feedback')) {
     document.querySelector('.feedback').remove();
   }
-  switch (state.status) {
-    case 'invalid': {
-      submitButton.removeAttribute('disabled');
-      input.removeAttribute('readonly');
-      const feedback = createFeedback(state.feedback, 'text-danger', i18nInstance);
-      form.parentNode.appendChild(feedback);
-      input.classList.add('is-invalid');
-      renderContent(state, i18nInstance);
-      break;
-    }
-    case 'loading': {
-      submitButton.setAttribute('disabled', null);
-      input.setAttribute('readonly', null);
-      const feedback = createFeedback(state.feedback, 'text-info', i18nInstance);
-      form.parentNode.appendChild(feedback);
-      input.classList.remove('is-invalid');
-      break;
-    }
-    case 'error': {
-      submitButton.removeAttribute('disabled');
-      input.removeAttribute('readonly');
-      const feedback = createFeedback(state.feedback, 'text-warning', i18nInstance);
-      form.parentNode.appendChild(feedback);
-      input.classList.remove('is-invalid');
-      renderContent(state, i18nInstance);
-      break;
-    }
-    case 'valid': {
-      submitButton.removeAttribute('disabled');
-      input.removeAttribute('readonly');
-      const feedback = createFeedback(state.feedback, 'text-success', i18nInstance);
-      form.reset();
-      form.parentNode.appendChild(feedback);
-      input.classList.remove('is-invalid');
-      renderContent(state, i18nInstance);
-      break;
-    }
-    default:
-      break;
+  if (_.has(renderer, state.status)) {
+    renderer[state.status](state, i18nInstance);
+  } else {
+    throw new Error('unknown state');
   }
 };
 
@@ -146,36 +148,32 @@ const renderModal = (state) => {
   modalReadLink.setAttribute('href', currentPost.link);
 };
 
+const stateRenderer = {
+  status: (state, i18nInstance) => {
+    render(state, i18nInstance);
+  },
+  feedback: (state, i18nInstance) => {
+    render(state, i18nInstance);
+  },
+  lang: (state, i18nInstance) => {
+    i18nInstance.changeLanguage(state.lang);
+    renderTemplate(i18nInstance);
+    render(state, i18nInstance);
+  },
+  posts: (state, i18nInstance) => {
+    renderContent(state, i18nInstance);
+  },
+  modalId: (state) => {
+    renderModal(state);
+  },
+  viewedPosts: (state, i18nInstance) => {
+    renderContent(state, i18nInstance);
+  },
+};
+
 const watch = (state, i18nInstance) => onChange(state, (path) => {
-  switch (path) {
-    case 'status': {
-      render(state, i18nInstance);
-      break;
-    }
-    case 'feedback': {
-      render(state, i18nInstance);
-      break;
-    }
-    case 'lang': {
-      i18nInstance.changeLanguage(state.lang);
-      renderTemplate(i18nInstance);
-      render(state, i18nInstance);
-      break;
-    }
-    case 'posts': {
-      renderContent(state, i18nInstance);
-      break;
-    }
-    case 'modalId': {
-      renderModal(state);
-      break;
-    }
-    case 'viewedPosts': {
-      renderContent(state, i18nInstance);
-      break;
-    }
-    default:
-      break;
+  if (_.has(stateRenderer, path)) {
+    stateRenderer[path](state, i18nInstance);
   }
 });
 
