@@ -66,12 +66,6 @@ const renderContent = (state, i18nInstance) => {
   renderList(state, 'posts', i18nInstance, liElementsCreator);
 };
 
-const elements = {
-  form: document.querySelector('.rss-form'),
-  input: document.querySelector('#url-input'),
-  submitButton: document.querySelector('#add-button'),
-};
-
 const renderer = {
   invalid: (state, i18nInstance, elems) => {
     elems.submitButton.removeAttribute('disabled');
@@ -107,13 +101,18 @@ const renderer = {
   },
 };
 
-const render = (state, i18nInstance, elems) => {
-  elems.input.focus();
+const render = (state, i18nInstance) => {
+  const elements = {
+    form: document.querySelector('.rss-form'),
+    input: document.querySelector('#url-input'),
+    submitButton: document.querySelector('#add-button'),
+  };
+  elements.input.focus();
   if (document.querySelector('.feedback')) {
     document.querySelector('.feedback').remove();
   }
   if (_.has(renderer, state.status)) {
-    renderer[state.status](state, i18nInstance, elems);
+    renderer[state.status](state, i18nInstance, elements);
   } else {
     throw new Error('unknown state');
   }
@@ -151,16 +150,16 @@ const renderModal = (state) => {
 };
 
 const stateRenderer = {
-  status: (state, i18nInstance, elems) => {
-    render(state, i18nInstance, elems);
+  status: (state, i18nInstance) => {
+    render(state, i18nInstance);
   },
-  feedback: (state, i18nInstance, elems) => {
-    render(state, i18nInstance, elems);
+  feedback: (state, i18nInstance) => {
+    render(state, i18nInstance);
   },
-  lang: (state, i18nInstance, elems) => {
+  lang: (state, i18nInstance) => {
     i18nInstance.changeLanguage(state.lang);
     renderTemplate(i18nInstance);
-    render(state, i18nInstance, elems);
+    render(state, i18nInstance);
   },
   posts: (state, i18nInstance) => {
     renderContent(state, i18nInstance);
@@ -175,7 +174,7 @@ const stateRenderer = {
 
 const watch = (state, i18nInstance) => onChange(state, (path) => {
   if (_.has(stateRenderer, path)) {
-    stateRenderer[path](state, i18nInstance, elements);
+    stateRenderer[path](state, i18nInstance);
   }
 });
 
