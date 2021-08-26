@@ -29,7 +29,7 @@ const proxifyUrl = (url) => {
   return proxyfiedUrl;
 };
 
-const postHandler = (event, state) => {
+const handlePost = (event, state) => {
   const currentId = event.target.dataset.id;
   const trgetRole = event.target.dataset.role;
   if (trgetRole === 'link') {
@@ -110,7 +110,7 @@ const app = () => {
     const postsContainer = document.querySelector('.posts');
 
     postsContainer.addEventListener('click', (e) => {
-      postHandler(e, watchedState);
+      handlePost(e, watchedState);
     });
     lngBtn.addEventListener('click', () => {
       // eslint-disable-next-line no-unused-expressions
