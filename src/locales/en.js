@@ -8,7 +8,7 @@ export default {
       network: 'Network error',
       unknown: 'Something went wrong...',
     },
-    added: 'RSS added successfully',
+    success: 'RSS added successfully',
     loading: 'Loading',
     feeds: 'Feeds',
     posts: 'Posts',

@@ -33,17 +33,16 @@ const handlePost = (event, state) => {
   const currentId = event.target.dataset.id;
   const trgetRole = event.target.dataset.role;
   if (trgetRole === 'link') {
-    state.viewedPosts.add(currentId);
+    state.ui.viewedPosts.add(currentId);
   }
   if (trgetRole === 'button') {
-    state.viewedPosts.add(currentId);
-    state.modalId = currentId;
+    state.ui.viewedPosts.add(currentId);
+    state.modal.modalId = currentId;
   }
 };
 
 const addNewRss = (url, state) => {
-  state.feedback = 'loading';
-  state.status = 'loading';
+  state.loading.status = 'loading';
   axios.get(proxifyUrl(url))
     .then((data) => {
       const content = parse(data);
@@ -51,12 +50,12 @@ const addNewRss = (url, state) => {
       const posts = content.items.map((item) => ({ ...item, id: _.uniqueId(), url }));
       state.feeds = [feed, ...state.feeds];
       state.posts = [...posts, ...state.posts];
-      state.feedback = 'added';
-      state.status = 'valid';
+      state.loading.status = 'success';
+      state.form.status = 'valid';
     })
     .catch((error) => {
-      state.feedback = identifyError(error);
-      state.status = 'error';
+      state.loading.error = identifyError(error);
+      state.loading.status = 'error';
     });
 };
 
@@ -94,10 +93,20 @@ const app = () => {
   yup.setLocale(yupLocale);
   const state = {
     lang: 'ru',
-    status: 'valid',
-    feedback: '',
-    modalId: null,
-    viewedPosts: new Set(),
+    form: {
+      status: 'valid',
+      error: '',
+    },
+    modal: {
+      modalId: null,
+    },
+    loading: {
+      status: '',
+      error: null,
+    },
+    ui: {
+      viewedPosts: new Set(),
+    },
     feeds: [],
     posts: [],
   };
@@ -127,8 +136,8 @@ const app = () => {
           if (!res.message) {
             addNewRss(url, watchedState);
           } else {
-            watchedState.status = 'invalid';
-            watchedState.feedback = res.message;
+            watchedState.form.error = res.message;
+            watchedState.form.status = 'invalid';
           }
         });
     });

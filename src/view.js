@@ -8,6 +8,12 @@ const createElement = (elName, text, ...classes) => {
   return el;
 };
 
+const removeElement = (selector) => {
+  if (document.querySelector(selector)) {
+    document.querySelector(selector).remove();
+  }
+};
+
 const liElementsCreator = {
   feeds: (feed) => {
     const li = createElement('li', '', 'list-group-item', 'border-0', 'boeder-end-0');
@@ -18,7 +24,7 @@ const liElementsCreator = {
   },
   posts: (post, state, i18nInstance) => {
     const li = createElement('li', '', 'list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'boeder-end-0');
-    const linkStyle = state.viewedPosts.has(post.id) ? 'fw-normal' : 'fw-bold';
+    const linkStyle = state.ui.viewedPosts.has(post.id) ? 'fw-normal' : 'fw-bold';
     const postLink = createElement('a', post.title, linkStyle);
     postLink.setAttribute('href', post.link);
     postLink.setAttribute('target', '_blank');
@@ -66,34 +72,49 @@ const renderContent = (state, i18nInstance) => {
   renderList(state, 'posts', i18nInstance, liElementsCreator);
 };
 
-const renderer = {
+const formHandler = {
   invalid: (state, i18nInstance, elements) => {
     elements.submitButton.removeAttribute('disabled');
     elements.input.removeAttribute('readonly');
-    const feedback = createFeedback(state.feedback, 'text-danger', i18nInstance);
+    removeElement('.feedback');
+    const feedback = createFeedback(state.form.error, 'text-danger', i18nInstance);
     elements.form.parentNode.appendChild(feedback);
     elements.input.classList.add('is-invalid');
     renderContent(state, i18nInstance);
   },
+  valid: (state, i18nInstance, elements) => {
+    elements.submitButton.removeAttribute('disabled');
+    elements.input.removeAttribute('readonly');
+    removeElement('.feedback');
+    elements.form.reset();
+    elements.input.classList.remove('is-invalid');
+    renderContent(state, i18nInstance);
+  },
+};
+
+const loadingHandler = {
   loading: (state, i18nInstance, elements) => {
     elements.submitButton.setAttribute('disabled', null);
     elements.input.setAttribute('readonly', null);
-    const feedback = createFeedback(state.feedback, 'text-info', i18nInstance);
+    removeElement('.feedback');
+    const feedback = createFeedback(state.loading.status, 'text-info', i18nInstance);
     elements.form.parentNode.appendChild(feedback);
     elements.input.classList.remove('is-invalid');
   },
   error: (state, i18nInstance, elements) => {
     elements.submitButton.removeAttribute('disabled');
     elements.input.removeAttribute('readonly');
-    const feedback = createFeedback(state.feedback, 'text-warning', i18nInstance);
+    removeElement('.feedback');
+    const feedback = createFeedback(state.loading.error, 'text-warning', i18nInstance);
     elements.form.parentNode.appendChild(feedback);
     elements.input.classList.remove('is-invalid');
     renderContent(state, i18nInstance);
   },
-  valid: (state, i18nInstance, elements) => {
+  success: (state, i18nInstance, elements) => {
     elements.submitButton.removeAttribute('disabled');
     elements.input.removeAttribute('readonly');
-    const feedback = createFeedback(state.feedback, 'text-success', i18nInstance);
+    removeElement('.feedback');
+    const feedback = createFeedback(state.loading.status, 'text-success', i18nInstance);
     elements.form.reset();
     elements.form.parentNode.appendChild(feedback);
     elements.input.classList.remove('is-invalid');
@@ -108,13 +129,11 @@ const render = (state, i18nInstance) => {
     submitButton: document.querySelector('#add-button'),
   };
   elements.input.focus();
-  if (document.querySelector('.feedback')) {
-    document.querySelector('.feedback').remove();
+  if (_.has(formHandler, state.form.status)) {
+    formHandler[state.form.status](state, i18nInstance, elements);
   }
-  if (_.has(renderer, state.status)) {
-    renderer[state.status](state, i18nInstance, elements);
-  } else {
-    throw new Error('unknown state');
+  if (_.has(loadingHandler, state.loading.status)) {
+    loadingHandler[state.loading.status](state, i18nInstance, elements);
   }
 };
 
@@ -139,7 +158,7 @@ const renderTemplate = (i18nInstance) => {
 };
 
 const renderModal = (state) => {
-  const currentPost = state.posts.filter((post) => post.id === state.modalId)[0];
+  const currentPost = state.posts.filter((post) => post.id === state.modal.modalId)[0];
   const modal = document.querySelector('#modal');
   const modalHeader = modal.querySelector('.modal-title');
   const modalBody = modal.querySelector('.modal-body');
@@ -150,10 +169,16 @@ const renderModal = (state) => {
 };
 
 const stateRenderer = {
-  status: (state, i18nInstance) => {
+  'loading.status': (state, i18nInstance) => {
     render(state, i18nInstance);
   },
-  feedback: (state, i18nInstance) => {
+  'loading.error': (state, i18nInstance) => {
+    render(state, i18nInstance);
+  },
+  'form.status': (state, i18nInstance) => {
+    render(state, i18nInstance);
+  },
+  'form.error': (state, i18nInstance) => {
     render(state, i18nInstance);
   },
   lang: (state, i18nInstance) => {
@@ -164,10 +189,10 @@ const stateRenderer = {
   posts: (state, i18nInstance) => {
     renderContent(state, i18nInstance);
   },
-  modalId: (state) => {
+  'modal.modalId': (state) => {
     renderModal(state);
   },
-  viewedPosts: (state, i18nInstance) => {
+  'ui.viewedPosts': (state, i18nInstance) => {
     renderContent(state, i18nInstance);
   },
 };
