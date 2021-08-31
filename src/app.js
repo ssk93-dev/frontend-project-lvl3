@@ -17,8 +17,8 @@ const validate = (value, feeds) => {
 };
 
 const identifyError = (error) => {
-  if (axios.isAxiosError(error)) return 'errors.network';
-  if (_.has(error, 'parsingError')) return 'errors.invalidRss';
+  if (_.has(error, 'isAxiosError')) return 'errors.network';
+  if (_.has(error, 'isParsingError')) return 'errors.invalidRss';
   return 'errors.unknown';
 };
 
@@ -46,10 +46,11 @@ const addNewRss = (url, state) => {
   state.status = 'loading';
   axios.get(proxifyUrl(url))
     .then((data) => {
-      const content = parse(data, url);
-      const posts = content.items.map((item) => ({ ...item, id: _.uniqueId() }));
-      state.feeds.push(content.channel);
-      state.posts = [...state.posts, ...posts];
+      const content = parse(data);
+      const feed = { ...content.channel, url };
+      const posts = content.items.map((item) => ({ ...item, id: _.uniqueId(), url }));
+      state.feeds = [feed, ...state.feeds];
+      state.posts = [...posts, ...state.posts];
       state.feedback = 'added';
       state.status = 'valid';
     })
@@ -62,9 +63,9 @@ const addNewRss = (url, state) => {
 const findNewPosts = (state) => {
   const existedPosts = state.posts.map((post) => post.link);
   const promises = state.feeds
-    .map((feed) => axios.get(proxifyUrl(feed.source))
+    .map((feed) => axios.get(proxifyUrl(feed.url))
       .then((data) => {
-        const updatedPosts = parse(data, feed.source).items;
+        const updatedPosts = parse(data).items;
         const newPosts = updatedPosts
           .filter((post) => !(existedPosts.includes(post.link)))
           .map((post) => ({ ...post, id: _.uniqueId() }));
@@ -74,7 +75,7 @@ const findNewPosts = (state) => {
   return Promise.all(promises);
 };
 
-const update = (timeout, state) => {
+const updateRss = (timeout, state) => {
   if (state.feeds.length > 0) {
     findNewPosts(state)
       .then((result) => {
@@ -82,7 +83,7 @@ const update = (timeout, state) => {
       });
   }
   setTimeout(() => {
-    update(timeout, state);
+    updateRss(timeout, state);
   }, timeout);
 };
 
@@ -114,13 +115,13 @@ const app = () => {
     });
     lngBtn.addEventListener('click', () => {
       // eslint-disable-next-line no-unused-expressions
-      state.lang === 'ru' ? watchedState.lang = 'en' : watchedState.lang = 'ru';
+      watchedState.lang === 'ru' ? watchedState.lang = 'en' : watchedState.lang = 'ru';
     });
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(form);
       const url = formData.get('url').trim();
-      const existedUrls = state.feeds.map((feed) => feed.source);
+      const existedUrls = state.feeds.map((feed) => feed.url);
       validate(url, existedUrls)
         .then((res) => {
           if (!res.message) {
@@ -131,7 +132,7 @@ const app = () => {
           }
         });
     });
-    update(updateInterval, watchedState);
+    updateRss(updateInterval, watchedState);
   });
 };
 
