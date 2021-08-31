@@ -153,20 +153,14 @@ const renderModal = (state) => {
   modalReadLink.setAttribute('href', currentPost.link);
 };
 
-const elements = {
-  form: document.querySelector('.rss-form'),
-  input: document.querySelector('#url-input'),
-  submitButton: document.querySelector('#add-button'),
-};
-
 const stateRenderer = {
-  loading: (state, i18nInstance) => {
+  loading: (state, i18nInstance, elements) => {
     loadingHandler[state.loading.status](state, i18nInstance, elements);
   },
-  form: (state, i18nInstance) => {
+  form: (state, i18nInstance, elements) => {
     formHandler[state.form.status](state, i18nInstance, elements);
   },
-  lang: (state, i18nInstance) => {
+  lang: (state, i18nInstance, elements) => {
     i18nInstance.changeLanguage(state.lang);
     renderTemplate(i18nInstance);
     formHandler[state.form.status](state, i18nInstance, elements);
@@ -183,9 +177,9 @@ const stateRenderer = {
   },
 };
 
-const watch = (state, i18nInstance) => onChange(state, (path) => {
+const watch = (state, i18nInstance, elements) => onChange(state, (path) => {
   if (_.has(stateRenderer, path)) {
-    stateRenderer[path](state, i18nInstance);
+    stateRenderer[path](state, i18nInstance, elements);
   }
 });
 

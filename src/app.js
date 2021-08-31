@@ -33,11 +33,11 @@ const handlePost = (event, state) => {
   const currentId = event.target.dataset.id;
   const trgetRole = event.target.dataset.role;
   if (trgetRole === 'link') {
-    state.ui.viewedPosts.add(currentId);
+    state.ui = { viewedPosts: state.ui.viewedPosts.add(currentId) };
   }
   if (trgetRole === 'button') {
-    state.ui.viewedPosts.add(currentId);
-    state.modal.modalId = currentId;
+    state.ui = { viewedPosts: state.ui.viewedPosts.add(currentId) };
+    state.modal = { modalId: currentId };
   }
 };
 
@@ -84,6 +84,14 @@ const updateRss = (timeout, state) => {
   }, timeout);
 };
 
+const elements = {
+  form: document.querySelector('.rss-form'),
+  input: document.querySelector('#url-input'),
+  submitButton: document.querySelector('#add-button'),
+  lngBtn: document.querySelector('#lang-button'),
+  postsContainer: document.querySelector('.posts'),
+};
+
 const updateInterval = 5000;
 
 const app = () => {
@@ -112,21 +120,18 @@ const app = () => {
     lng: state.lang,
     resources: { ru, en },
   }).then(() => {
-    const watchedState = watch(state, i18nInstance);
-    const form = document.querySelector('.rss-form');
-    const lngBtn = document.querySelector('#lang-button');
-    const postsContainer = document.querySelector('.posts');
+    const watchedState = watch(state, i18nInstance, elements);
 
-    postsContainer.addEventListener('click', (e) => {
+    elements.postsContainer.addEventListener('click', (e) => {
       handlePost(e, watchedState);
     });
-    lngBtn.addEventListener('click', () => {
+    elements.lngBtn.addEventListener('click', () => {
       // eslint-disable-next-line no-unused-expressions
       watchedState.lang === 'ru' ? watchedState.lang = 'en' : watchedState.lang = 'ru';
     });
-    form.addEventListener('submit', (e) => {
+    elements.form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const formData = new FormData(form);
+      const formData = new FormData(elements.form);
       const url = formData.get('url').trim();
       const existedUrls = state.feeds.map((feed) => feed.url);
       validate(url, existedUrls)
