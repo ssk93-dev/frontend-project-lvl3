@@ -84,14 +84,6 @@ const updateRss = (timeout, state) => {
   }, timeout);
 };
 
-const elements = {
-  form: document.querySelector('.rss-form'),
-  input: document.querySelector('#url-input'),
-  submitButton: document.querySelector('#add-button'),
-  lngBtn: document.querySelector('#lang-button'),
-  postsContainer: document.querySelector('.posts'),
-};
-
 const updateInterval = 5000;
 
 const app = () => {
@@ -116,6 +108,15 @@ const app = () => {
     feeds: [],
     posts: [],
   };
+
+  const elements = {
+    form: document.querySelector('.rss-form'),
+    input: document.querySelector('#url-input'),
+    submitButton: document.querySelector('#add-button'),
+    lngBtn: document.querySelector('#lang-button'),
+    postsContainer: document.querySelector('.posts'),
+  };
+
   i18nInstance.init({
     lng: state.lang,
     resources: { ru, en },
