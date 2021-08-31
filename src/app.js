@@ -92,14 +92,14 @@ const app = () => {
   const state = {
     lang: 'ru',
     form: {
-      status: 'valid',
+      status: 'filling',
       error: '',
     },
     modal: {
       modalId: null,
     },
     loading: {
-      status: '',
+      status: 'pending',
       error: null,
     },
     ui: {
@@ -112,9 +112,16 @@ const app = () => {
   const elements = {
     form: document.querySelector('.rss-form'),
     input: document.querySelector('#url-input'),
-    submitButton: document.querySelector('#add-button'),
+    submitBtn: document.querySelector('#add-button'),
     lngBtn: document.querySelector('#lang-button'),
     postsContainer: document.querySelector('.posts'),
+    header: document.querySelector('#header'),
+    slogan: document.querySelector('#slogan'),
+    example: document.querySelector('#example'),
+    label: document.querySelector('#label'),
+    modal: document.querySelector('#modal'),
+    modalReadBtn: document.querySelector('.modal-footer > a'),
+    modalCloseBtn: document.querySelector('.modal-footer > button'),
   };
 
   i18nInstance.init({

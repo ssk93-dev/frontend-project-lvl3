@@ -72,73 +72,77 @@ const renderContent = (state, i18nInstance) => {
   renderList(state, 'posts', i18nInstance, liElementsCreator);
 };
 
-const formHandler = {
-  invalid: (state, i18nInstance, elements) => {
-    elements.submitButton.removeAttribute('disabled');
-    elements.input.removeAttribute('readonly');
+const formRenderer = {
+  invalid: (state, i18nInstance, { submitBtn, input, form }) => {
+    submitBtn.removeAttribute('disabled');
+    input.removeAttribute('readonly');
     removeElement('.feedback');
     const feedback = createFeedback(state.form.error, 'text-danger', i18nInstance);
-    elements.form.parentNode.appendChild(feedback);
-    elements.input.classList.add('is-invalid');
+    form.parentNode.appendChild(feedback);
+    input.classList.add('is-invalid');
     renderContent(state, i18nInstance);
   },
-  valid: (state, i18nInstance, elements) => {
-    elements.submitButton.removeAttribute('disabled');
-    elements.input.removeAttribute('readonly');
+  valid: (state, i18nInstance, { submitBtn, input, form }) => {
+    submitBtn.removeAttribute('disabled');
+    input.removeAttribute('readonly');
     removeElement('.feedback');
-    elements.form.reset();
-    elements.input.classList.remove('is-invalid');
+    form.reset();
+    input.classList.remove('is-invalid');
     renderContent(state, i18nInstance);
   },
+  filling: () => null,
 };
 
-const loadingHandler = {
-  loading: (state, i18nInstance, elements) => {
-    elements.submitButton.setAttribute('disabled', null);
-    elements.input.setAttribute('readonly', null);
+const loadingRenderer = {
+  loading: (state, i18nInstance, { submitBtn, input, form }) => {
+    submitBtn.setAttribute('disabled', null);
+    input.setAttribute('readonly', null);
     removeElement('.feedback');
     const feedback = createFeedback(state.loading.status, 'text-info', i18nInstance);
-    elements.form.parentNode.appendChild(feedback);
-    elements.input.classList.remove('is-invalid');
+    form.parentNode.appendChild(feedback);
+    input.classList.remove('is-invalid');
   },
-  error: (state, i18nInstance, elements) => {
-    elements.submitButton.removeAttribute('disabled');
-    elements.input.removeAttribute('readonly');
+  error: (state, i18nInstance, { submitBtn, input, form }) => {
+    submitBtn.removeAttribute('disabled');
+    input.removeAttribute('readonly');
     removeElement('.feedback');
     const feedback = createFeedback(state.loading.error, 'text-warning', i18nInstance);
-    elements.form.parentNode.appendChild(feedback);
-    elements.input.classList.remove('is-invalid');
+    form.parentNode.appendChild(feedback);
+    input.classList.remove('is-invalid');
     renderContent(state, i18nInstance);
   },
-  success: (state, i18nInstance, elements) => {
-    elements.submitButton.removeAttribute('disabled');
-    elements.input.removeAttribute('readonly');
+  success: (state, i18nInstance, { submitBtn, input, form }) => {
+    submitBtn.removeAttribute('disabled');
+    input.removeAttribute('readonly');
     removeElement('.feedback');
     const feedback = createFeedback(state.loading.status, 'text-success', i18nInstance);
-    elements.form.reset();
-    elements.form.parentNode.appendChild(feedback);
-    elements.input.classList.remove('is-invalid');
+    form.reset();
+    input.focus();
+    form.parentNode.appendChild(feedback);
+    input.classList.remove('is-invalid');
     renderContent(state, i18nInstance);
   },
+  pending: () => null,
 };
 
-const renderTemplate = (i18nInstance) => {
-  const header = document.querySelector('#header');
-  const slogan = document.querySelector('#slogan');
-  const example = document.querySelector('#example');
-  const addButton = document.querySelector('#add-button');
-  const langButton = document.querySelector('#lang-button');
-  const label = document.querySelector('#label');
-  const modal = document.querySelector('#modal');
-  const modalReadBtn = modal.querySelector('.modal-footer > a');
-  const modalCloseBtn = modal.querySelector('.modal-footer > button');
+const renderTemplate = (i18nInstance, elements) => {
+  const {
+    modalReadBtn,
+    modalCloseBtn,
+    header,
+    slogan,
+    example,
+    submitBtn,
+    lngBtn,
+    label,
+  } = elements;
   modalReadBtn.textContent = i18nInstance.t('modalRead');
   modalCloseBtn.textContent = i18nInstance.t('modalClose');
   header.textContent = i18nInstance.t('header');
   slogan.textContent = i18nInstance.t('slogan');
   example.textContent = i18nInstance.t('example');
-  addButton.textContent = i18nInstance.t('addButton');
-  langButton.textContent = i18nInstance.t('langButton');
+  submitBtn.textContent = i18nInstance.t('addButton');
+  lngBtn.textContent = i18nInstance.t('langButton');
   label.textContent = i18nInstance.t('label');
 };
 
@@ -155,16 +159,16 @@ const renderModal = (state) => {
 
 const stateRenderer = {
   loading: (state, i18nInstance, elements) => {
-    loadingHandler[state.loading.status](state, i18nInstance, elements);
+    loadingRenderer[state.loading.status](state, i18nInstance, elements);
   },
   form: (state, i18nInstance, elements) => {
-    formHandler[state.form.status](state, i18nInstance, elements);
+    formRenderer[state.form.status](state, i18nInstance, elements);
   },
   lang: (state, i18nInstance, elements) => {
     i18nInstance.changeLanguage(state.lang);
-    renderTemplate(i18nInstance);
-    formHandler[state.form.status](state, i18nInstance, elements);
-    loadingHandler[state.loading.status](state, i18nInstance, elements);
+    renderTemplate(i18nInstance, elements);
+    formRenderer[state.form.status](state, i18nInstance, elements);
+    loadingRenderer[state.loading.status](state, i18nInstance, elements);
   },
   posts: (state, i18nInstance) => {
     renderContent(state, i18nInstance);
