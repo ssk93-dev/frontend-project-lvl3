@@ -42,7 +42,7 @@ const handlePost = (event, state) => {
 };
 
 const addNewRss = (url, state) => {
-  state.loading.status = 'loading';
+  state.loading = { status: 'loading', error: null };
   axios.get(proxifyUrl(url))
     .then((data) => {
       const content = parse(data);
@@ -50,12 +50,10 @@ const addNewRss = (url, state) => {
       const posts = content.items.map((item) => ({ ...item, id: _.uniqueId(), url }));
       state.feeds = [feed, ...state.feeds];
       state.posts = [...posts, ...state.posts];
-      state.loading.status = 'success';
-      state.form.status = 'valid';
+      state.loading = { status: 'success', error: null };
     })
     .catch((error) => {
-      state.loading.error = identifyError(error);
-      state.loading.status = 'error';
+      state.loading = { status: 'error', error: identifyError(error) };
     });
 };
 
@@ -134,10 +132,10 @@ const app = () => {
       validate(url, existedUrls)
         .then((res) => {
           if (!res.message) {
+            watchedState.form = { status: 'valid', error: null };
             addNewRss(url, watchedState);
           } else {
-            watchedState.form.error = res.message;
-            watchedState.form.status = 'invalid';
+            watchedState.form = { status: 'invalid', error: res.message };
           }
         });
     });

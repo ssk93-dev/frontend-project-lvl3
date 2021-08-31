@@ -122,21 +122,6 @@ const loadingHandler = {
   },
 };
 
-const render = (state, i18nInstance) => {
-  const elements = {
-    form: document.querySelector('.rss-form'),
-    input: document.querySelector('#url-input'),
-    submitButton: document.querySelector('#add-button'),
-  };
-  elements.input.focus();
-  if (_.has(formHandler, state.form.status)) {
-    formHandler[state.form.status](state, i18nInstance, elements);
-  }
-  if (_.has(loadingHandler, state.loading.status)) {
-    loadingHandler[state.loading.status](state, i18nInstance, elements);
-  }
-};
-
 const renderTemplate = (i18nInstance) => {
   const header = document.querySelector('#header');
   const slogan = document.querySelector('#slogan');
@@ -168,31 +153,32 @@ const renderModal = (state) => {
   modalReadLink.setAttribute('href', currentPost.link);
 };
 
+const elements = {
+  form: document.querySelector('.rss-form'),
+  input: document.querySelector('#url-input'),
+  submitButton: document.querySelector('#add-button'),
+};
+
 const stateRenderer = {
-  'loading.status': (state, i18nInstance) => {
-    render(state, i18nInstance);
+  loading: (state, i18nInstance) => {
+    loadingHandler[state.loading.status](state, i18nInstance, elements);
   },
-  'loading.error': (state, i18nInstance) => {
-    render(state, i18nInstance);
-  },
-  'form.status': (state, i18nInstance) => {
-    render(state, i18nInstance);
-  },
-  'form.error': (state, i18nInstance) => {
-    render(state, i18nInstance);
+  form: (state, i18nInstance) => {
+    formHandler[state.form.status](state, i18nInstance, elements);
   },
   lang: (state, i18nInstance) => {
     i18nInstance.changeLanguage(state.lang);
     renderTemplate(i18nInstance);
-    render(state, i18nInstance);
+    formHandler[state.form.status](state, i18nInstance, elements);
+    loadingHandler[state.loading.status](state, i18nInstance, elements);
   },
   posts: (state, i18nInstance) => {
     renderContent(state, i18nInstance);
   },
-  'modal.modalId': (state) => {
+  modal: (state) => {
     renderModal(state);
   },
-  'ui.viewedPosts': (state, i18nInstance) => {
+  ui: (state, i18nInstance) => {
     renderContent(state, i18nInstance);
   },
 };
