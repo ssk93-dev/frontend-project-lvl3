@@ -44,9 +44,9 @@ const handlePost = (event, state) => {
 const addNewRss = (url, state) => {
   state.loading = { status: 'loading', error: null };
   axios.get(proxifyUrl(url))
-    .then((data) => {
-      const content = parse(data);
-      const feed = { ...content.channel, url };
+    .then((response) => {
+      const content = parse(response.data.contents);
+      const feed = { title: content.title, description: content.description, url };
       const posts = content.items.map((item) => ({ ...item, id: _.uniqueId(), url }));
       state.feeds = [feed, ...state.feeds];
       state.posts = [...posts, ...state.posts];
@@ -61,8 +61,8 @@ const findNewPosts = (state) => {
   const existedPosts = state.posts.map((post) => post.link);
   const promises = state.feeds
     .map((feed) => axios.get(proxifyUrl(feed.url))
-      .then((data) => {
-        const updatedPosts = parse(data).items;
+      .then((response) => {
+        const updatedPosts = parse(response.data.contents).items;
         const newPosts = updatedPosts
           .filter((post) => !(existedPosts.includes(post.link)))
           .map((post) => ({ ...post, id: _.uniqueId() }));
