@@ -44,10 +44,10 @@ const handlePost = (event, state) => {
 const addNewRss = (url, state) => {
   state.loading = { status: 'loading', error: null };
   axios.get(proxifyUrl(url))
-    .then((response) => {
-      const content = parse(response.data.contents);
-      const feed = { title: content.title, description: content.description, url };
-      const posts = content.items.map((item) => ({ ...item, id: _.uniqueId(), url }));
+    .then(({ data }) => {
+      const { title, description, items } = parse(data.contents);
+      const feed = { title, description, url };
+      const posts = items.map((item) => ({ ...item, id: _.uniqueId(), url }));
       state.feeds = [feed, ...state.feeds];
       state.posts = [...posts, ...state.posts];
       state.loading = { status: 'success', error: null };
@@ -61,9 +61,9 @@ const findNewPosts = (state) => {
   const existedPosts = state.posts.map((post) => post.link);
   const promises = state.feeds
     .map((feed) => axios.get(proxifyUrl(feed.url))
-      .then((response) => {
-        const updatedPosts = parse(response.data.contents).items;
-        const newPosts = updatedPosts
+      .then(({ data }) => {
+        const { items } = parse(data.contents);
+        const newPosts = items
           .filter((post) => !(existedPosts.includes(post.link)))
           .map((post) => ({ ...post, id: _.uniqueId() }));
         return newPosts;
