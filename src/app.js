@@ -134,8 +134,7 @@ const app = () => {
       handlePost(e, watchedState);
     });
     elements.lngBtn.addEventListener('click', () => {
-      // eslint-disable-next-line no-unused-expressions
-      watchedState.lang === 'ru' ? watchedState.lang = 'en' : watchedState.lang = 'ru';
+      watchedState.lang = watchedState.lang === 'en' ? 'ru' : 'en';
     });
     elements.form.addEventListener('submit', (e) => {
       e.preventDefault();
